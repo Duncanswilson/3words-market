@@ -21,6 +21,8 @@ export const AuctionsList = ({ tokens }: { tokens: any[] }) => {
                   `/token/${tokenInfo.tokenContract}/${tokenInfo.tokenId}`
                 )
               }
+              showBids={true}
+              showPerpetual={true}
               useBetaIndexer={true}
             />
           );

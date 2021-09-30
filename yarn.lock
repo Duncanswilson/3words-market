@@ -724,6 +724,11 @@
     "@ethersproject/properties" "^5.4.0"
     "@ethersproject/strings" "^5.4.0"
 
+"@fontsource/vt323@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/vt323/-/vt323-4.5.0.tgz#a9559532ca721050921f0642ed3f63edb4216902"
+  integrity sha512-Np37ThgmZ+JZm5jsCshFfW7W3003b4lWepURyvz76vhJfn1H+WVjQt/BIvgcQ9SNq9bM/bbfAPWk6EMC7yceJg==
+
 "@hapi/accept@5.0.2":
   version "5.0.2"
   resolved "https://registry.npmjs.org/@hapi/accept/-/accept-5.0.2.tgz"

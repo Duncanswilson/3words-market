@@ -1,24 +1,29 @@
 import { Global, css } from '@emotion/react'
 import { media, buttonStyle } from './mixins'
 import { returnBreakpoint } from './breakpoints'
+import { injectGlobal } from '@emotion/css'
+import "@fontsource/vt323"; // Defaults to weight 400.
+
 
 export default function GlobalStyles() {
   return (
     <Global
       styles={css`
         :root {
+          @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
           /* COLORS */
           --black: #000;
-          --white: #fff;
-          --bg-color: #f6f8fa;
+          --white: #FFFFFF;
+          --bg-color: #FFFFFF;
           --overlay: rgba(0, 0, 0, 0.85);
           --overlay-light: rgba(0, 0, 0, 0.35);
           --border-black: 1px solid var(--black);
           --border-light: 1px solid #dbdbdb;
 
           /* FONTS */
-          --font-a: Helvetica, Arial, sans-serif;
-          --font-b: Courier, monospace;
+          --font-a: vt323;
+          --font-b: 'Lobster', cursive;
           
           /* SPACING */
           --base-unit: 8px;
@@ -61,6 +66,8 @@ export default function GlobalStyles() {
         /* LAYOUT */
         body * {
           font-family: var(--font-a)!important;
+          background: #FAF9F6;
+          color: #77889;
         }
 
         main {
@@ -91,8 +98,10 @@ export default function GlobalStyles() {
         }
 
         /* TYPOGRPAHY */
+        /* TYPOGRPAHY */
         h1,h2,h3,h4,h5,h6 {
-          font-weight: 500;
+          font-weight: 1000;
+          color: #708090	
         }
         h1 {
           font-size: var(--text-05);
@@ -116,7 +125,7 @@ export default function GlobalStyles() {
           padding-bottom: var(--space-sm);
           line-height: 1.35;
           font-weight: 400;
-        }
+       }
 
         /* CUSTOM */
         .button {
@@ -158,5 +167,6 @@ export default function GlobalStyles() {
         }
       `}
     />
+    
   )
 }

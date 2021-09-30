@@ -29,7 +29,7 @@ export const getStaticProps: GetStaticProps = async () => {
     curatorAddress: process.env.NEXT_PUBLIC_CURATORS_ID as string,
     collectionAddress: process.env
       .NEXT_PUBLIC_TARGET_CONTRACT_ADDRESS as string,
-    limit: 301,
+    limit: 333,
     offset: 0,
   });
 

@@ -18,6 +18,7 @@ import useSWR from "swr";
 
 import Head from "../components/head";
 import { PageWrapper } from "./../styles/components";
+import { NavLink } from '../components/NavLink'
 
 const ListItemComponent = () => {
   const {
@@ -96,8 +97,11 @@ const RenderOwnedList = ({ account }: { account: string }) => {
   if (data.tokens.length === 0) {
     return (
       <div className="owned-list-no-tokens">
-        <h2>We couldn’t find any NFTs you own 😢</h2>
-        <p>Make sure you’ve connected the correct wallet</p>
+        <h2>We couldn’t find any 3words in your wallet. 😢</h2>
+        <p>Make sure you’ve connected the correct wallet or go buy one listed in the auction house</p>
+        <NavLink passHref href="/">
+          <a>Auctions</a>
+        </NavLink>
       </div>
     );
   }
