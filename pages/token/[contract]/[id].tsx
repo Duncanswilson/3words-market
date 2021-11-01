@@ -113,7 +113,7 @@ function App({
     };
     // handle the click event
     const go = async () => {
-      console.log("why am I seeing nothing???")
+      console.log("why am I seeing nothing? ??")
       // console.log(id)
       contract.functions.ReRoll(1, word1, word2, word3, overrides)
     }
