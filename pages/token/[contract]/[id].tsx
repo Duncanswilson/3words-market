@@ -146,7 +146,7 @@ function App({
           <NFTFullPage
             useBetaIndexer={true}
             contract={query.contract as string}
-
+            id={query.id as string}
             initialData={initialData}
           />
         </PageWrapper>
@@ -215,6 +215,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   return {
     props: {
+      id,
       name: tokenInfo.metadata?.name || null,
       description: tokenInfo.metadata?.description || null,
       image: tokenInfo.image || null,
