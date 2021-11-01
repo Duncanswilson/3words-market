@@ -215,7 +215,6 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   return {
     props: {
-      id,
       name: tokenInfo.metadata?.name || null,
       description: tokenInfo.metadata?.description || null,
       image: tokenInfo.image || null,
