@@ -126,6 +126,16 @@ function Piece({
         description={description}
         ogImage={image}
       />
+      {wallet.status === 'connected' && wallet.balance != '-1' ? (
+          <div>
+            <div><button onClick={() => wallet.reset()}>disconnect</button> Account: {wallet.account}</div>
+          </div>
+        ) : (
+          <div>
+            {/* we should modify this onClick to use a proper useCallback function which also does optional walletconnect instead of metamask - maybe use web3modal react package so we can use even more wallets */}
+            <button onClick={() => wallet.connect('injected')}>Connect Metamask</button>
+          </div>
+        )}
       <MediaConfiguration
         networkId={process.env.NEXT_PUBLIC_NETWORK_ID as NetworkIDs}
         style={styles}
