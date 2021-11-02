@@ -139,6 +139,41 @@ function Piece({
           />
         </PageWrapper>
       </MediaConfiguration>
+      <form onSubmit={handleReRoll}>
+        <div>
+          <label >Word 1:
+            <input
+              ref={inputEl1}
+              type="text"
+              name="word1"
+              onChange={e => setWord1(e.target.value)}
+            />
+          </label>
+        </div>
+        <div>
+          <label >Word 2:
+            <input
+              ref={inputEl2}
+              type="text"
+              name="word2"
+              onChange={e => setWord2(e.target.value)}
+            />
+          </label>
+        </div>
+        <div>
+          <label >Word 3:
+            <input
+              ref={inputEl3}
+              type="text"
+              name="word3"
+              onChange={e => setWord3(e.target.value)}
+            />
+          </label>
+        </div>
+        <div>
+          <button type='submit' onClick={handleReRoll}>reroll (0.333 ETH)</button>
+        </div>
+      </form>
     </>
   );
 }
