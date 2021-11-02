@@ -23,6 +23,7 @@ const styles = {
 };
 
 type PieceProps = {
+  id:  string,
   name: string;
   description: string;
   image: string;
@@ -32,6 +33,7 @@ type PieceProps = {
 const APP_TITLE = process.env.NEXT_PUBLIC_APP_TITLE;
 
 function Piece({
+  id,
   name,
   description,
   image,
@@ -112,8 +114,8 @@ function Piece({
      // handle the click event
      const go = async () => {
        console.log("why am I seeing nothing? ??")
-       // console.log(id)
-       contract.functions.ReRoll(1, word1, word2, word3, overrides)
+       console.log(id)
+       contract.functions.ReRoll(id, word1, word2, word3, overrides)
      }
      go()
    }, [wallet, provider, contract, word1, word2, word3]);
