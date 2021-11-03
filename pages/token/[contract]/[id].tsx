@@ -11,8 +11,10 @@ import { ethers } from "ethers";
 import { useWallet, UseWalletProvider } from 'use-wallet';
 import { PageWrapper } from "../../../styles/components";
 import Head from "../../../components/head";
-const abi = require('./abi.json');
-const contractAddress = '0x350cb870cd263edea5b9f447096e98f15118861f';
+const reroll_abi = require('./reroll-abi.json');
+const threewords_abi = require('./threewords-abi.json');
+const threewordsContractAddress = '0x699c848ceb3a98a7a982bd6ddc6a39e4a363d4b4';
+const rerollContractAddress = '0x350cb870cd263edea5b9f447096e98f15118861f';
 const network = 'rinkeby';
 
 const styles = {
@@ -42,13 +44,19 @@ function Piece({
   const { query } = useRouter();
 
   const [provider, setProvider] = useState<ethers.providers.Web3Provider>()
-  const [contract, setContract] = useState<ethers.Contract>()
+  const [rerollContract, setRerollContract] = useState<ethers.Contract>()
+  const [threeWordsContract, setThreeWordsContract] = useState<ethers.Contract>()
 
   // const [id, setID] = useState<string>()
 
   const [word1, setWord1] = useState<string>()
   const [word2, setWord2] = useState<string>()
   const [word3, setWord3] = useState<string>()
+
+  const [last_word1, setLastWord1] = useState<string>()
+  const [last_word2, setLastWord2] = useState<string>()
+  const [last_word3, setLastWord3] = useState<string>()
+
 
   const inputEl1 = useRef(null);
   const inputEl2 = useRef(null);
@@ -71,11 +79,13 @@ function Piece({
      const go = async () => {
        if (provider) {
          // this code will run when provider is set
-         if (!contract) {
+         if (!rerollContract) {
 
-           const contract = new ethers.Contract(contractAddress, abi, provider.getSigner())
-           setContract(contract)
-           console.log('contract set')
+           const rerollContract = new ethers.Contract(rerollContractAddress, reroll_abi, provider.getSigner())
+           const threeWordsContract = new ethers.Contract(threewordsContractAddress, threewords_abi, provider.getSigner())
+           setRerollContract(rerollContract)
+           setThreeWordsContract(threeWordsContract)
+           console.log('contracts set')
          }
        }
      }
@@ -93,17 +103,48 @@ function Piece({
    //   }
    //   go()
    // }, [id])
-
+   function areStringsDifferent(a:string, b:string): number {
+    if (a != b ) {
+        return 0;
+    }
+    else{
+        return 1;
+    }
+   }
    const handleReRoll = useCallback((e) => {
      // ignore this
      e.preventDefault();
-     if (!contract) {
+     if (!rerollContract) {
        console.log("something is up with the contract")
        return
      }
+
+     let _tokenIdToPhraseId = rerollContract._tokenIdToPhraseId(id);
+
+     if (_tokenIdToPhraseId == 0 && threeWordsContract){
+         let words = threeWordsContract.tokenIdToWords(id);
+         setLastWord1(words[0]);
+         setLastWord2(words[1]);
+         setLastWord3(words[2]);
+     }
+     else{
+       setLastWord1(rerollContract.lastWord1[id]);
+       setLastWord2(rerollContract.lastWord2[id]);
+       setLastWord3(rerollContract.lastWord3[id]);
+     }
+
+     console.log(typeof(word1));
+     console.log(typeof(last_word1));
+
+     const w1:number = areStringsDifferent(word1, last_word1);
+     const w2:number = areStringsDifferent(word2, last_word2);
+     const w3:number = areStringsDifferent(word3, last_word3);
+     const totalPrice = 0.111*(w1+w2+w3);
+
+
      let overrides = {
        // To convert Ether to Wei:
-       value: ethers.utils.parseEther("0.333")     // ether in this case MUST be a string
+       value: ethers.utils.parseEther(totalPrice.toString)     // ether in this case MUST be a string
 
        // Or you can use Wei directly if you have that:
        // value: someBigNumber
@@ -113,8 +154,6 @@ function Piece({
      };
      // handle the click event
      const go = async () => {
-       console.log("why am I seeing nothing? ??")
-       console.log(id)
        contract.functions.ReRoll(id, word1, word2, word3, overrides)
      }
      go()
