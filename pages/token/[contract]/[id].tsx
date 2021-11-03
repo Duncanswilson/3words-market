@@ -49,13 +49,13 @@ function Piece({
 
   // const [id, setID] = useState<string>()
 
-  const [word1, setWord1] = useState<string>()
-  const [word2, setWord2] = useState<string>()
-  const [word3, setWord3] = useState<string>()
+  const [word1, setWord1] = useState<string>('')
+  const [word2, setWord2] = useState<string>('')
+  const [word3, setWord3] = useState<string>('')
 
-  const [last_word1, setLastWord1] = useState<string>()
-  const [last_word2, setLastWord2] = useState<string>()
-  const [last_word3, setLastWord3] = useState<string>()
+  const [last_word1, setLastWord1] = useState<string>('')
+  const [last_word2, setLastWord2] = useState<string>('')
+  const [last_word3, setLastWord3] = useState<string>('')
 
 
   const inputEl1 = useRef(null);
@@ -144,7 +144,7 @@ function Piece({
 
      let overrides = {
        // To convert Ether to Wei:
-       value: ethers.utils.parseEther(totalPrice.toString)     // ether in this case MUST be a string
+       value: ethers.utils.parseEther(totalPrice.toString())     // ether in this case MUST be a string
 
        // Or you can use Wei directly if you have that:
        // value: someBigNumber
@@ -154,10 +154,10 @@ function Piece({
      };
      // handle the click event
      const go = async () => {
-       contract.functions.ReRoll(id, word1, word2, word3, overrides)
+       rerollContract.functions.ReRoll(id, word1, word2, word3, overrides)
      }
      go()
-   }, [wallet, provider, contract, word1, word2, word3]);
+   }, [wallet, provider, rerollContract, word1, word2, word3]);
 
 
   return (
