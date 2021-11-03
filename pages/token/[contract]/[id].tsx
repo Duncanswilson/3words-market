@@ -13,6 +13,7 @@ import { PageWrapper } from "../../../styles/components";
 import Head from "../../../components/head";
 const reroll_abi = require('./reroll-abi.json');
 const threewords_abi = require('./threewords-abi.json');
+// const threewordsContractAddress = '0xb77f0b25af126fce0ea41e5696f1e5e9102e1d77';
 const threewordsContractAddress = '0x699c848ceb3a98a7a982bd6ddc6a39e4a363d4b4';
 const rerollContractAddress = '0x350cb870cd263edea5b9f447096e98f15118861f';
 const network = 'rinkeby';
@@ -43,7 +44,9 @@ function Piece({
 }: PieceProps) {
   const { query } = useRouter();
 
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider>()
+  const [rinkebyProvider, setRinkebyProvider] = useState<ethers.providers.Web3Provider>()
+  const [mainnetProvider, setMainnetProvider] = useState<ethers.providers.Web3Provider>()
+
   const [rerollContract, setRerollContract] = useState<ethers.Contract>()
   const [threeWordsContract, setThreeWordsContract] = useState<ethers.Contract>()
 
@@ -57,7 +60,6 @@ function Piece({
   const [last_word2, setLastWord2] = useState<string>('')
   const [last_word3, setLastWord3] = useState<string>('')
 
-
   const inputEl1 = useRef(null);
   const inputEl2 = useRef(null);
   const inputEl3 = useRef(null);
@@ -67,9 +69,12 @@ function Piece({
   useEffect(() => {
      if (wallet && wallet.ethereum) {
        // this code will run when wallet is all set. nothing async happening here for now.
-       if (!provider) {
-         const newProvider = new ethers.providers.Web3Provider(wallet.ethereum, network)
-         setProvider(newProvider)
+       if (!rinkebyProvider) {
+         const rinkebyProvider = new ethers.providers.Web3Provider(wallet.ethereum, network)
+         setRinkebyProvider(rinkebyProvider)
+         const mainnetProvider = new ethers.providers.Web3Provider(wallet.ethereum, network)
+         setMainnetProvider(rinkebyProvider)
+
          console.log('provider set')
        }
      }
@@ -77,40 +82,72 @@ function Piece({
 
    useEffect(() => {
      const go = async () => {
-       if (provider) {
+       if (rinkebyProvider) {
          // this code will run when provider is set
          if (!rerollContract) {
 
-           const rerollContract = new ethers.Contract(rerollContractAddress, reroll_abi, provider.getSigner())
-           const threeWordsContract = new ethers.Contract(threewordsContractAddress, threewords_abi, provider.getSigner())
+           const rerollContract = new ethers.Contract(rerollContractAddress, reroll_abi, rinkebyProvider.getSigner())
+           const threeWordsContract = new ethers.Contract(threewordsContractAddress, threewords_abi, mainnetProvider.getSigner())
            setRerollContract(rerollContract)
            setThreeWordsContract(threeWordsContract)
            console.log('contracts set')
+
          }
        }
      }
      go()
-   }, [provider])
+   }, [rinkebyProvider, mainnetProvider])
 
 
-   // useEffect(() => {
-   //   const go = async () => {
-   //     if (!id) {
-   //       setID(query.id);
-   //       console.log('id set to')
-   //       console.log(query.id)
-   //     }
-   //   }
-   //   go()
-   // }, [id])
+   useEffect(() => {
+     const go = async () => {
+       if (rerollContract){
+         if (!(await rerollContract.lastWord1(id)) && threeWordsContract){
+             console.log(parseInt(id, 10));
+             let words = await threeWordsContract.functions.tokenIdToWords(parseInt(id, 10));
+              setLastWord1(words[0]);
+              setLastWord2(words[1]);
+              setLastWord3(words[2]);
+              setWord1(words[0]);
+              setWord2(words[1]);
+              setWord3(words[2]);
+         }
+         else{
+           setLastWord1(await rerollContract.lastWord1(id));
+           setLastWord2(await rerollContract.lastWord2(id));
+           setLastWord3(await rerollContract.lastWord3(id));
+           setWord1(await rerollContract.lastWord1(id));
+           setWord2(await rerollContract.lastWord2(id));
+           setWord3(await rerollContract.lastWord3(id));
+         }
+       }
+     }
+     go()
+   }, [rerollContract, threeWordsContract])
+
+
+
    function areStringsDifferent(a:string, b:string): number {
-    if (a != b ) {
-        return 0;
-    }
-    else{
+    if (a !== b ) {
         return 1;
     }
+    else{
+        return 0;
+    }
    }
+   console.log(last_word1)
+   const w1:number = areStringsDifferent(word1, last_word1);
+   const w2:number = areStringsDifferent(word2, last_word2);
+   const w3:number = areStringsDifferent(word3, last_word3);
+   let totalPrice:number;
+   if (w1+w2+w3){
+      totalPrice = 0.111*(w1+w2+w3);
+   }
+   else{
+     totalPrice = 0.0111;
+   }
+   console.log(totalPrice)
+
    const handleReRoll = useCallback((e) => {
      // ignore this
      e.preventDefault();
@@ -118,28 +155,6 @@ function Piece({
        console.log("something is up with the contract")
        return
      }
-
-     let _tokenIdToPhraseId = rerollContract._tokenIdToPhraseId(id);
-
-     if (_tokenIdToPhraseId == 0 && threeWordsContract){
-         let words = threeWordsContract.tokenIdToWords(id);
-         setLastWord1(words[0]);
-         setLastWord2(words[1]);
-         setLastWord3(words[2]);
-     }
-     else{
-       setLastWord1(rerollContract.lastWord1[id]);
-       setLastWord2(rerollContract.lastWord2[id]);
-       setLastWord3(rerollContract.lastWord3[id]);
-     }
-
-     console.log(typeof(word1));
-     console.log(typeof(last_word1));
-
-     const w1:number = areStringsDifferent(word1, last_word1);
-     const w2:number = areStringsDifferent(word2, last_word2);
-     const w3:number = areStringsDifferent(word3, last_word3);
-     const totalPrice = 0.111*(w1+w2+w3);
 
 
      let overrides = {
@@ -157,7 +172,39 @@ function Piece({
        rerollContract.functions.ReRoll(id, word1, word2, word3, overrides)
      }
      go()
-   }, [wallet, provider, rerollContract, word1, word2, word3]);
+   }, [wallet, rinkebyProvider, rerollContract, word1, word2, word3]);
+
+
+   const onChange1 = (e) => {
+     const value = e.target.value;
+     if (!value){
+       setWord1(last_word1);
+     }
+     else{
+       setWord1(value);
+     }
+   }
+
+
+   const onChange2 = (e) => {
+     const value = e.target.value;
+     if (!value){
+       setWord2(last_word2);
+     }
+     else{
+       setWord2(value);
+     }
+   }
+
+   const onChange3 = (e) => {
+     const value = e.target.value;
+     if (!value){
+       setWord3(last_word3);
+     }
+     else{
+       setWord3(value);
+     }
+   }
 
 
   return (
@@ -197,7 +244,8 @@ function Piece({
               ref={inputEl1}
               type="text"
               name="word1"
-              onChange={e => setWord1(e.target.value)}
+              placeholder={last_word1}
+              onChange={onChange1}
             />
           </label>
         </div>
@@ -207,7 +255,8 @@ function Piece({
               ref={inputEl2}
               type="text"
               name="word2"
-              onChange={e => setWord2(e.target.value)}
+              placeholder={last_word2}
+              onChange={onChange2}
             />
           </label>
         </div>
@@ -217,12 +266,13 @@ function Piece({
               ref={inputEl3}
               type="text"
               name="word3"
-              onChange={e => setWord3(e.target.value)}
+              placeholder={last_word3}
+              onChange={onChange3}
             />
           </label>
         </div>
         <div>
-          <button type='submit' onClick={handleReRoll}>reroll (0.333 ETH)</button>
+          <button type='submit' disabled={!wallet || wallet.status !== 'connected' || !wallet.ethereum || wallet.balance == '-1'} onClick={handleReRoll}>Re-Roll ({totalPrice} ETH)</button>
         </div>
       </form>
     </>
