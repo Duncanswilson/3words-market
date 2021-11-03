@@ -82,7 +82,7 @@ function Piece({
 
    useEffect(() => {
      const go = async () => {
-       if (rinkebyProvider) {
+       if (rinkebyProvider && mainnetProvider) {
          // this code will run when provider is set
          if (!rerollContract) {
 
@@ -175,7 +175,7 @@ function Piece({
    }, [wallet, rinkebyProvider, rerollContract, word1, word2, word3]);
 
 
-   const onChange1 = (e) => {
+   const onChange1 = (e: React.ChangeEvent<any>) => {
      const value = e.target.value;
      if (!value){
        setWord1(last_word1);
@@ -186,7 +186,7 @@ function Piece({
    }
 
 
-   const onChange2 = (e) => {
+   const onChange2 = (e: React.ChangeEvent<any>) => {
      const value = e.target.value;
      if (!value){
        setWord2(last_word2);
@@ -196,7 +196,7 @@ function Piece({
      }
    }
 
-   const onChange3 = (e) => {
+   const onChange3 = (e: React.ChangeEvent<any>) => {
      const value = e.target.value;
      if (!value){
        setWord3(last_word3);
